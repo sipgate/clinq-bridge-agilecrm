@@ -68,3 +68,54 @@ export const mapAgileCRMContact2ClinqContact = (agileCRMContact: any, apiUrl: st
     };
     return contact;
 };
+
+export const mapEvent2Comment = (
+    callEvent: CallEvent,
+): string => {
+    const { direction, from, to, channel } = callEvent;
+    const phoneNumber = callEvent.direction === CallDirection.OUT ? callEvent.to : callEvent.from;
+    const date = moment(Number(callEvent.start));
+    const duration = formatDuration(callEvent.end - callEvent.start);
+    const directionInfo = direction === CallDirection.IN ? "Eingehender" : "Ausgehender";
+    const prePosition = direction === CallDirection.IN ? "von" : "an";
+    return `${directionInfo} CLINQ Anruf in channel ${channel.name} ${prePosition} Nummer ${phoneNumber} am ${date.format("DD.MM.YYYY")} (${duration})`;
+};
+
+function formatDuration(ms: number): string {
+    const duration = moment.duration(ms);
+    const minutes = Math.floor(duration.asMinutes());
+    const seconds = duration.seconds() < 10 ? `0${duration.seconds()}` : duration.seconds();
+    return `${minutes}:${seconds} min`;
+}
+
+export const mapClinqContactTemplate2AgileCRMContact = (
+    contactTemplate: ContactTemplate,
+): {} => {
+    const agileCrmContact = []
+    contactTemplate.phoneNumbers?.forEach(function(phoneNumber:PhoneNumber) {
+        if (phoneNumber.label === PhoneNumberLabel.MOBILE) {
+            agileCrmContact.push({"type": "SYSTEM", "value": phoneNumber.phoneNumber, "name": "phone", "subtype":"mobile"})
+        }
+        if (phoneNumber.label === PhoneNumberLabel.WORK) {
+            agileCrmContact.push({"type": "SYSTEM", "value": phoneNumber.phoneNumber, "name": "phone", "subtype":"work"})
+        }
+        if (phoneNumber.label === PhoneNumberLabel.HOME) {
+            agileCrmContact.push({"type": "SYSTEM", "value": phoneNumber.phoneNumber, "name": "phone", "subtype":"home"})
+        }
+    })
+    if (contactTemplate.email){
+        agileCrmContact.push({"type": "SYSTEM", "value": contactTemplate.email, "name":"email"})
+    }
+    if (contactTemplate.firstName){
+        agileCrmContact.push({"type": "SYSTEM", "value": contactTemplate.firstName, "name":"first_name"})
+    }
+    if (contactTemplate.lastName){
+        agileCrmContact.push({"type": "SYSTEM", "value": contactTemplate.lastName, "name":"last_name"})
+    }
+    if (contactTemplate.organization){
+        agileCrmContact.push({"type": "SYSTEM", "value": contactTemplate.organization, "name":"company"})
+    }
+    return {'properties': agileCrmContact};
+};
+
+
