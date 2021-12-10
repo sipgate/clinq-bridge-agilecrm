@@ -76,3 +76,21 @@ export async function createAgileCRMContact(apiKey: string, apiUrl: string, cont
     const response = await axios.post(apiUrl.replace(/\/$/, '') + `/contacts`, contact,config);
     return response.data;
 }
+
+export async function updateAgileCRMContact(apiKey: string, apiUrl: string, contact: {}) {
+    const config: AxiosRequestConfig  = {
+        headers: {"Accept": `application/json`},
+        auth: {username:apiKey.split(':')[0], password: apiKey.split(':')[1]},
+    }
+    const response = await axios.put(apiUrl.replace(/\/$/, '') + `/contacts/edit-properties`, contact,config);
+    return response.data;
+}
+
+export async function deleteAgileCRMContact(apiKey: string, apiUrl: string, id: string) {
+    const config: AxiosRequestConfig  = {
+        headers: {"Accept": `application/json`},
+        auth: {username:apiKey.split(':')[0], password: apiKey.split(':')[1]},
+    }
+    const response = await axios.delete(apiUrl.replace(/\/$/, '') + `/contacts/${id}`, config);
+    return response.data;
+}

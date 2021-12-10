@@ -90,6 +90,7 @@ function formatDuration(ms: number): string {
 
 export const mapClinqContactTemplate2AgileCRMContact = (
     contactTemplate: ContactTemplate,
+    id:string=""
 ): {} => {
     const agileCrmContact = []
     contactTemplate.phoneNumbers?.forEach(function(phoneNumber:PhoneNumber) {
@@ -106,16 +107,31 @@ export const mapClinqContactTemplate2AgileCRMContact = (
     if (contactTemplate.email){
         agileCrmContact.push({"type": "SYSTEM", "value": contactTemplate.email, "name":"email"})
     }
+    else {
+        agileCrmContact.push({"type": "SYSTEM", "value": "", "name":"email"})
+    }
     if (contactTemplate.firstName){
         agileCrmContact.push({"type": "SYSTEM", "value": contactTemplate.firstName, "name":"first_name"})
+    }
+    else {
+        agileCrmContact.push({"type": "SYSTEM", "value": "", "name":"first_name"})
     }
     if (contactTemplate.lastName){
         agileCrmContact.push({"type": "SYSTEM", "value": contactTemplate.lastName, "name":"last_name"})
     }
+    else {
+        agileCrmContact.push({"type": "SYSTEM", "value": "", "name":"last_name"})
+    }
     if (contactTemplate.organization){
         agileCrmContact.push({"type": "SYSTEM", "value": contactTemplate.organization, "name":"company"})
     }
-    return {'properties': agileCrmContact};
+    else {
+        agileCrmContact.push({"type": "SYSTEM", "value": "", "name":"company"})
+    }
+    if (id)
+        return {'id':id, 'properties': agileCrmContact};
+    else
+        return {'properties': agileCrmContact};
 };
 
 
